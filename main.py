@@ -1,5 +1,6 @@
 from config import TEST_LLMs_API_ACCESS_TOKEN, TEST_LLMs_REST_API_URL
 from ASUllmAPI import ModelConfig, query_llm
+from prompt_builder import build_bot_response_classification_prompt
 
 if __name__ == '__main__':
     # define the model
@@ -8,10 +9,14 @@ if __name__ == '__main__':
                         access_token=TEST_LLMs_API_ACCESS_TOKEN,
                         api_url=TEST_LLMs_REST_API_URL)
 
-    query = "define socratic method"
+    query = ("Great observation! Sunlight is indeed crucial for plants to make their own food. "
+             "But how exactly do you think sunlight helps in this process? What happens inside "
+             "the plant when it captures sunlight?")
+
+    llm_prompt = build_bot_response_classification_prompt(bot_response=query)
 
     llm_response = query_llm(model=model,
-                             query=query,
+                             query=llm_prompt,
                              # number of retries when API call is NOT successful
                              num_retry=3,
                              # number of seconds to sleep when API call successful
