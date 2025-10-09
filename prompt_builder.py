@@ -46,16 +46,19 @@ For the chosen label, provide:
 ---
 
 ### STEP 3 — Output Format
-Output in **strict CSV format**, ready for Excel.
+Return the output in **strict JSON** format.
 
-**Header row:**
-original_text,non_question_part,question_part,label,rationale,confidence
+Each input text must be represented as one JSON object with the following keys:
+- "original_text" — the full input text exactly as received.
+- "non_question_part" — all non-question sentences (statements, explanations, feedback).
+- "question_part" — all question sentences combined into one string.
+- "label" — one of: ["Clarification", "Assumptions", "Reasons_Evidence", "Viewpoints", "Implications", "Meta"].
+- "rationale" — one concise sentence (10–25 words) explaining why the label fits the question part.
+- "confidence" — a numeric score between 0 and 1 representing confidence in the classification.
 
-**Guidelines:**
-- Quote fields that contain commas or line breaks.
-- Keep only one row per input text (no multi-row splitting).
-- Do not add any commentary or extra text outside the CSV.
----
+Do not include any commentary, markdown formatting, or text outside the JSON.
+
+
 
 ### Example
 
@@ -64,10 +67,16 @@ Exactly! Glucose is like the plant's food, providing the energy and building blo
 What do you think happens during the light-dependent reactions? Why might they be called "light-dependent"?
 
 **Expected Output:**
-non_question_part,question_part,label,rationale,confidence
-"Exactly! Glucose is like the plant's food, providing the energy and building blocks it needs to grow and stay alive. Now, let's dive a bit deeper into the process. Photosynthesis occurs in two main stages: the light-dependent reactions and the Calvin Cycle. 
-What do you think happens during the light-dependent reactions? Why might they be called "light-dependent"?
-","Exactly! Glucose is like the plant's food, providing the energy and building blocks it needs to grow and stay alive. Now, let's dive a bit deeper into the process. Photosynthesis occurs in two main stages: the light-dependent reactions and the Calvin Cycle.","What do you think happens during the light-dependent reactions? Why might they be called 'light-dependent'?","Reasons_Evidence","The combined questions ask the learner to reason about process mechanisms and explain underlying causes.",0.90
+
+  {{
+    "original_text": "Exactly! Glucose is like the plant's food... Why might they be called 'light-dependent'?",
+    "non_question_part": "Exactly! Glucose is like the plant's food, providing the energy and building blocks it needs to grow and stay alive. Now, let's dive a bit deeper into the process. Photosynthesis occurs in two main stages: the light-dependent reactions and the Calvin Cycle.",
+    "question_part": "What do you think happens during the light-dependent reactions? Why might they be called 'light-dependent'?",
+    "label": "Reasons_Evidence",
+    "rationale": "Both questions encourage the learner to explain a process and reason about underlying mechanisms.",
+    "confidence": 0.92
+  }}
+
 
 ### INPUT TEXT
 {bot_response}
