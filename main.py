@@ -18,7 +18,7 @@ if __name__ == '__main__':
                         api_url=TEST_LLMs_REST_API_URL)
 
     # Read the input file with all columns preserved
-    input_file_path = "Input/pilot_-_stem_craft_interactions.csv"
+    input_file_path = "Input/Chronicles_sequential_interactions.csv"  # Updated to use new format file
     original_df = process_input_with_all_columns(input_file_path)
     
     # Extract bot responses for processing
@@ -27,8 +27,16 @@ if __name__ == '__main__':
     results = []
     print(f"Processing {len(bot_responses)} bot responses...")
     
+    # Get bot response rows for better tracking
+    if 'Interaction Type' in original_df.columns:
+        bot_response_rows = original_df[original_df['Interaction Type'] == 'Bot Response']
+        print(f"Found {len(bot_response_rows)} bot response interactions")
+    
     for i, response in enumerate(bot_responses):
         print(f"Processing response {i+1}/{len(bot_responses)}")
+        if 'Interaction Type' in original_df.columns:
+            interaction_id = bot_response_rows.iloc[i]['Interaction ID'] if i < len(bot_response_rows) else f"response_{i+1}"
+            print(f"Interaction ID: {interaction_id}")
         print(f"Response: {response[:100]}...")  # Show first 100 chars for progress tracking
         
         llm_prompt = build_bot_response_classification_prompt(bot_response=response)
@@ -63,7 +71,7 @@ if __name__ == '__main__':
     enhanced_df = enhance_dataframe_with_analysis(original_df, results)
     
     # Save the enhanced DataFrame to Excel
-    output_path = "Output/enhanced_stem_craft_interactions.xlsx"
+    output_path = "Output/enhanced_chronicles_interactions.xlsx"
     save_enhanced_dataframe(enhanced_df, output_path)
     
     print(f"\nProcessing complete!")
