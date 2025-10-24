@@ -53,7 +53,7 @@ def enhance_dataframe_with_analysis(df: pd.DataFrame, analysis_results: List[Dic
     enhanced_df['original_text'] = ''
     enhanced_df['non_question_part'] = ''
     enhanced_df['question_part'] = ''
-    enhanced_df['label'] = ''
+    enhanced_df['socratic_label'] = ''
     enhanced_df['rationale'] = ''
     enhanced_df['confidence'] = 0.0
     
@@ -70,7 +70,7 @@ def enhance_dataframe_with_analysis(df: pd.DataFrame, analysis_results: List[Dic
                 enhanced_df.loc[idx, 'original_text'] = result.get('original_text', '')
                 enhanced_df.loc[idx, 'non_question_part'] = result.get('non_question_part', '')
                 enhanced_df.loc[idx, 'question_part'] = result.get('question_part', '')
-                enhanced_df.loc[idx, 'label'] = result.get('label', '')
+                enhanced_df.loc[idx, 'socratic_label'] = result.get('socratic_label', '')
                 enhanced_df.loc[idx, 'rationale'] = result.get('rationale', '')
                 enhanced_df.loc[idx, 'confidence'] = result.get('confidence', 0.0)
                 analysis_index += 1
@@ -81,7 +81,7 @@ def enhance_dataframe_with_analysis(df: pd.DataFrame, analysis_results: List[Dic
                 enhanced_df.iloc[i]['original_text'] = result.get('original_text', '')
                 enhanced_df.iloc[i]['non_question_part'] = result.get('non_question_part', '')
                 enhanced_df.iloc[i]['question_part'] = result.get('question_part', '')
-                enhanced_df.iloc[i]['label'] = result.get('label', '')
+                enhanced_df.iloc[i]['socratic_label'] = result.get('socratic_label', '')
                 enhanced_df.iloc[i]['rationale'] = result.get('rationale', '')
                 enhanced_df.iloc[i]['confidence'] = result.get('confidence', 0.0)
     

@@ -18,7 +18,7 @@ if __name__ == '__main__':
                         api_url=TEST_LLMs_REST_API_URL)
 
     # Read the input file with all columns preserved
-    input_file_path = "Input/Chronicles_sequential_interactions.csv"  # Updated to use new format file
+    input_file_path = "Input/Quest_sequential_interactions.csv"  # Updated to use new format file
     original_df = process_input_with_all_columns(input_file_path)
     
     # Extract bot responses for processing
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     enhanced_df = enhance_dataframe_with_analysis(original_df, results)
     
     # Save the enhanced DataFrame to Excel
-    output_path = "Output/enhanced_chronicles_interactions.xlsx"
+    output_path = "Output/enhanced_quest_interactions.xlsx"
     save_enhanced_dataframe(enhanced_df, output_path)
     
     print(f"\nProcessing complete!")

@@ -24,10 +24,13 @@ Available labels:
 3. **Reasons_Evidence** — requests justification, explanation, or proof.  
 4. **Viewpoints** — explores alternative perspectives or opposing ideas.  
 5. **Implications** — examines logical or practical consequences.  
-6. **Meta** — reflects on the question itself or on thinking processes.
+6. **Meta** — reflects on the question itself or on thinking processes.  
+7. **Other** — use only if there is no question present or if none of the six categories clearly apply.
+
+**Always prefer one of the six Socratic categories when a question is present. Use "Other" only when the input lacks questions or is completely out of scope.**
 
 For the chosen label, provide:
-- a **rationale** (one concise sentence, 10–25 words), explaining why this question fits that category and  
+- a **rationale** (one concise sentence, 10–25 words), explaining why this question fits that category, and  
 - a **confidence** score between 0 and 1 (e.g., 0.86) indicating your confidence in this classification.
 
 ---
@@ -42,6 +45,7 @@ For the chosen label, provide:
 | **Viewpoints** | Invites alternative perspectives | “How might someone else view this?” |
 | **Implications** | Explores consequences or logical outcomes | “If that is true, what follows?” |
 | **Meta** | Reflects on the question or process itself | “Why is this question important?” |
+| **Other** | Use only if there is no question or it does not fit any category | [No example required] |
 
 ---
 
@@ -49,34 +53,15 @@ For the chosen label, provide:
 Return the output in **strict JSON** format.
 
 Each input text must be represented as one JSON object with the following keys:
-- "original_text" — the full input text exactly as received.
 - "non_question_part" — all non-question sentences (statements, explanations, feedback).
 - "question_part" — all question sentences combined into one string.
-- "label" — one of: ["Clarification", "Assumptions", "Reasons_Evidence", "Viewpoints", "Implications", "Meta"].
+- "socratic_label" — one of: ["Clarification", "Assumptions", "Reasons_Evidence", "Viewpoints", "Implications", "Meta", "Other"].
 - "rationale" — one concise sentence (10–25 words) explaining why the label fits the question part.
 - "confidence" — a numeric score between 0 and 1 representing confidence in the classification.
 
 Do not include any commentary, markdown formatting, or text outside the JSON.
 
-
-
-### Example
-
-**Input:**
-Exactly! Glucose is like the plant's food, providing the energy and building blocks it needs to grow and stay alive. Now, let's dive a bit deeper into the process. Photosynthesis occurs in two main stages: the light-dependent reactions and the Calvin Cycle. 
-What do you think happens during the light-dependent reactions? Why might they be called "light-dependent"?
-
-**Expected Output:**
-
-  {{
-    "original_text": "Exactly! Glucose is like the plant's food... Why might they be called 'light-dependent'?",
-    "non_question_part": "Exactly! Glucose is like the plant's food, providing the energy and building blocks it needs to grow and stay alive. Now, let's dive a bit deeper into the process. Photosynthesis occurs in two main stages: the light-dependent reactions and the Calvin Cycle.",
-    "question_part": "What do you think happens during the light-dependent reactions? Why might they be called 'light-dependent'?",
-    "label": "Reasons_Evidence",
-    "rationale": "Both questions encourage the learner to explain a process and reason about underlying mechanisms.",
-    "confidence": 0.92
-  }}
-
+---
 
 ### INPUT TEXT
 {bot_response}
