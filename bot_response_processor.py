@@ -1,5 +1,5 @@
 from config import TEST_LLMs_API_ACCESS_TOKEN, TEST_LLMs_REST_API_URL
-from ASUllmAPI import ModelConfig, query_llm
+from ASUllmAPI import ModelConfig
 from prompt_builder import build_bot_response_classification_prompt
 from input_processing import (
     input_reader, 
@@ -7,10 +7,15 @@ from input_processing import (
     enhance_dataframe_with_analysis, 
     save_enhanced_dataframe
 )
-import json
+from llm_utils import process_llm_response
 import pandas as pd
+import time
 
 if __name__ == '__main__':
+    # Start timing
+    start_time = time.time()
+    print("=== Bot Response Processor Started ===")
+    
     # define the model
     model = ModelConfig(name="gpt4_1",  #llama3_2-90b
                         provider="openai",  #aws
@@ -18,7 +23,7 @@ if __name__ == '__main__':
                         api_url=TEST_LLMs_REST_API_URL)
 
     # Read the input file with all columns preserved
-    input_file_path = "Input/Quest_sequential_interactions.csv"  # Updated to use new format file
+    input_file_path = "Input/Chronicles_sequential_interactions.csv"  # Updated to use new format file
     original_df = process_input_with_all_columns(input_file_path)
     
     # Extract bot responses for processing
@@ -37,43 +42,26 @@ if __name__ == '__main__':
         if 'Interaction Type' in original_df.columns:
             interaction_id = bot_response_rows.iloc[i]['Interaction ID'] if i < len(bot_response_rows) else f"response_{i+1}"
             print(f"Interaction ID: {interaction_id}")
+        else:
+            interaction_id = f"response_{i+1}"
         print(f"Response: {response[:100]}...")  # Show first 100 chars for progress tracking
         
         llm_prompt = build_bot_response_classification_prompt(bot_response=response)
-        llm_response = query_llm(model=model,
-                                 query=llm_prompt,
-                                 # number of retries when API call is NOT successful
-                                 num_retry=3,
-                                 # number of seconds to sleep when API call successful
-                                 success_sleep=0.0,
-                                 # number of seconds to sleep when API call is NOT successful
-                                 fail_sleep=1.0)
-
-        response_text = llm_response.get('response')
-        # Expecting strict JSON per instructions above
-        try:
-            parsed = json.loads(response_text) if isinstance(response_text, str) else response_text
-        except Exception:
-            # If the model returned code fences or stray text, try to salvage the JSON substring
-            if isinstance(response_text, str):
-                start = response_text.find('{')
-                end = response_text.rfind('}')
-                if start != -1 and end != -1 and end > start:
-                    parsed = json.loads(response_text[start:end + 1])
-                else:
-                    raise
-            else:
-                raise
-
+        parsed = process_llm_response(model, llm_prompt, "bot", interaction_id, response)
         results.append(parsed)
 
     # Enhance the original DataFrame with analysis results
     enhanced_df = enhance_dataframe_with_analysis(original_df, results)
     
     # Save the enhanced DataFrame to Excel
-    output_path = "Output/enhanced_quest_interactions.xlsx"
+    output_path = "Output/Chronicles_bot_labels.xlsx" #change the output file name here
     save_enhanced_dataframe(enhanced_df, output_path)
+    
+    # Calculate and display execution time
+    end_time = time.time()
+    execution_time = end_time - start_time
     
     print(f"\nProcessing complete!")
     print(f"Enhanced data with {len(enhanced_df)} rows saved to {output_path}")
     print(f"Columns in output: {list(enhanced_df.columns)}")
+    print(f"\n⏱️  Total execution time: {execution_time:.2f} seconds ({execution_time/60:.2f} minutes)")

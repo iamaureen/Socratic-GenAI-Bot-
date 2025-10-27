@@ -1,3 +1,76 @@
+def build_student_response_classification_prompt(paired_interaction):
+    """
+    Build a prompt for analyzing student responses in relation to bot questions.
+    
+    Args:
+        paired_interaction: Dictionary containing bot and student interaction data
+    
+    Returns:
+        Formatted prompt string for LLM analysis
+    """
+    # Extract bot message and student response from paired interaction
+    bot_message = paired_interaction.get('bot_text', '')
+    student_response = paired_interaction.get('student_text', '')
+    
+    return f"""You are an expert in discourse analysis and educational game design. Your task is to evaluate a single interaction turn between a student and a GenAI Socratic tutoring bot.
+
+You will be given:
+- The bot's message (which may include a question, feedback, or instruction)
+- The student's immediate response
+
+Your job is to **analyze the student response in context** of the bot's message and assign **engagement labels** that describe how the student is participating in the learning or narrative process.
+
+---
+
+### STEP 1 — Read the Bot and Student Turn
+
+BOT: {bot_message}
+
+STUDENT: {student_response}
+
+---
+
+### STEP 2 — Choose All Applicable Labels for the Student Response
+
+Select any of the following labels that apply to the **student's turn** (you may assign more than one if appropriate):
+
+| **Label** | **Description** |
+|----------|------------------|
+| **Narrative Participation** | The student engages with the story world by making choices, describing setting or events, staying in character, or proposing story actions. |
+| **Factual Explanation** | The student provides a correct or relevant explanation of a scientific concept, summary, or observation. |
+| **Incorrect Attempt** | The student attempts to answer but provides factually incorrect or confused information. |
+| **IDK / Not Sure** | The student explicitly expresses uncertainty or gives a non-answer (e.g., “I don’t know”, “not sure”). |
+
+---
+
+### STEP 3 — For Each Assigned Label, Provide a Reason
+
+For each label you assign, write a brief explanation (max 25 words) explaining why it fits the student’s response. Do not include labels that do not apply.
+
+---
+
+### STEP 4 — Output Format (strict JSON)
+
+Return your analysis in the following format:
+
+{{
+  "bot_message": "[verbatim bot message]",
+  "student_response": "[verbatim student response]",
+  "assigned_labels": [
+    {{
+      "label": "Narrative Participation",
+      "reasoning": "The student chooses a setting and describes it using sensory language."
+    }},
+    {{
+      "label": "Factual Explanation",
+      "reasoning": "The student accurately explains the role of sunlight in the light-dependent reactions."
+    }}
+  ]
+}}
+
+"""
+
+
 def build_bot_response_classification_prompt(bot_response):
     return f"""You are a trained discourse analyst specializing in Socratic dialogue and critical thinking.
 
